@@ -51,7 +51,7 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      font-family: 'Noto Serif', 'Noto Serif SC', 'Georgia', 'SimSun', 'ST Song', serif;
+      font-family: 'Noto Serif', 'Noto Serif SC', serif;
       font-size: 16pt;
       line-height: 1.5;
       color: rgba(0, 0, 0, .85);
@@ -144,6 +144,8 @@
       text-decoration: none;
       color: inherit;
       outline: none;
+      width: 100%;
+      height: 100%;
     }
 
     #calendar li:hover, #calendar li:focus-within {
@@ -165,7 +167,7 @@
       pointer-events: none;
     }
 
-    #calendar li:active::before {
+    #calendar li.active::before {
       animation: select .5s ease forwards;
     }
 
@@ -619,6 +621,7 @@
 
     <script>
       (() => {
+        let hideTimeout = false;
         const showDay = (_n) => {
           const _x = document.querySelectorAll('*[id^="day-"]');
           for (let _i = 0; _i < _x.length; _i++) {
@@ -638,7 +641,10 @@
           } catch {
             return false;
           }
-          document.body.classList.remove('show-nav');
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => {
+            document.body.classList.remove('show-nav');
+          }, 250);
         }
         document.querySelector('header').addEventListener('click', (_e) => {
           if (_e.target == document.querySelector('header')) {
@@ -662,6 +668,7 @@
             _p.textContent = _s;
           }
         }
+        let clickTimeout = false;
         const _t = new Date();
         const _c = JSON.parse(document.getElementById('chengyu-defs').textContent);
         for (let _i = 0; _i < _c.length; _i++) {
@@ -692,15 +699,20 @@
           _l.appendChild(_k);
           _l.addEventListener('click', (_e) => {
             _e.preventDefault();
+            _l.classList.add('active');
             showDay(_l.dataset.day);
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+              _l.classList.remove('active');
+            }, 750);
           }, false);
-           if (_t.getMonth() == 11 && _t.getDate() >= parseInt(_x, 10)) { /* */
+           if (_t.getMonth() == 11 && _t.getDate() >= parseInt(_x, 10)) { 
             document.querySelector('#calendar ul').appendChild(_l);
-          } /* */
+          }
         }
-        if (_t.getMonth() == 11) { /* */
+        if (_t.getMonth() == 11) { 
           showDay(_t.getDate());
-        } /* */
+        } 
       })();
     </script>
 
