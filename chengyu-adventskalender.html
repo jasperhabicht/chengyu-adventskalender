@@ -694,22 +694,22 @@
     <script>
       (() => {
         let hideTimeout = false;
-        const showDay = (_n) => {
-          const _x = document.querySelectorAll('*[id^="day-"]');
-          for (let _i = 0; _i < _x.length; _i++) {
-            _x[_i].style.opacity = 0;
-            _x[_i].style.zIndex = 0;
+        const showDay = (dayNumber) => {
+          const dayElements = document.querySelectorAll('*[id^="day-"]');
+          for(let i = 0; i < dayElements.length; i += 1) {
+            dayElements[i].style.opacity = 0;
+            dayElements[i].style.zIndex = 0;
           }
-          for (let _j = 0; _j < document.body.classList.length; _j++) {
-              const _c = document.body.classList[_j];
-              if (_c.startsWith('color-set-')) {
-                  document.body.classList.remove(_c);
-              }
+          for(let j = 0; j < document.body.classList.length; j++) {
+            const bodyClasses = document.body.classList[j];
+            if(bodyClasses.startsWith('color-set-')) {
+              document.body.classList.remove(bodyClasses);
+            }
           }
-          document.body.classList.add('color-set-'+parseInt(_n % 4 + 1));
+          document.body.classList.add('color-set-'+parseInt(dayNumber % 4 + 1));
           try {
-            document.querySelector('#day-'+_n).style.opacity = 1;
-            document.querySelector('#day-'+_n).style.zIndex = 10;
+            document.querySelector('#day-'+dayNumber).style.opacity = 1;
+            document.querySelector('#day-'+dayNumber).style.zIndex = 10;
           } catch {
             return false;
           }
@@ -718,80 +718,80 @@
             document.body.classList.remove('show-nav');
           }, 250);
         }
-        document.querySelector('body > header').addEventListener('click', (_e) => {
-          if (_e.target == document.querySelector('body > header')) {
-            _e.preventDefault();
+        document.querySelector('body > header').addEventListener('click', (event) => {
+          if(event.target == document.querySelector('body > header')) {
+            event.preventDefault();
             document.body.classList.toggle('show-nav');
           }
         }, false);
-        const parseStyle = (_p, _s) => {
-          _v = _s.match(/(.*?<\/?em>)/g);
-          if (_v != null) {
-            for (let _i = 0; _i < _v.length; _i++) {
-              if (_v[_i].match(/<em>/) != null) {
-                _p.appendChild(document.createTextNode(_v[_i].replace(/<em>/, '')));
+        const parseStyle = (pElement, string) => {
+          matches = string.match(/(.*?<\/?em>)/g);
+          if(matches != null) {
+            for(let i = 0; i < matches.length; i++) {
+              if(matches[i].match(/<em>/) != null) {
+                pElement.appendChild(document.createTextNode(matches[i].replace(/<em>/, '')));
               } else {
-                const _w = document.createElement('em');
-                _w.appendChild(document.createTextNode(_v[_i].replace(/<\/em>/, '')));
-                _p.appendChild(_w);
+                const emElement = document.createElement('em');
+                emElement.appendChild(document.createTextNode(matches[i].replace(/<\/em>/, '')));
+                pElement.appendChild(emElement);
               }
             }
           } else {
-            _p.textContent = _s;
+            pElement.textContent = string;
           }
         }
         let clickTimeout = false;
-        const _t = new Date();
-        const _c = JSON.parse(document.getElementById('chengyu-defs').textContent);
-        for (let _i = 0; _i < _c.length; _i++) {
-          const _n = document.importNode(document.querySelector('#template-chengyu').content, true);
-          const _x = Object.keys(_c[_i])[0];
-          const _a = _c[_i][_x].an;
-          for (let _j = 0; _j < _a.length; _j++) {
-            const _m = document.importNode(document.querySelector('#template-analysis').content, true);
-            _m.querySelector('.characters').textContent = _a[_j].zh;
-            _m.querySelector('.pinyin').textContent = _a[_j].py;
-            parseStyle(_m.querySelector('.translation'), _a[_j].de);
-            _n.querySelector('.analysis').appendChild(_m);
+        const today = new Date();
+        const chengyDefs = JSON.parse(document.getElementById('chengyu-defs').textContent);
+        for(let i = 0; i < chengyDefs.length; i++) {
+          const chengyuTemplate = document.importNode(document.querySelector('#template-chengyu').content, true);
+          const itemId = Object.keys(chengyDefs[i])[0];
+          const itemAnalysis = chengyDefs[i][itemId].an;
+          for(let j = 0; j < itemAnalysis.length; j++) {
+            const analysisTemplate = document.importNode(document.querySelector('#template-analysis').content, true);
+            analysisTemplate.querySelector('.characters').textContent = itemAnalysis[j].zh;
+            analysisTemplate.querySelector('.pinyin').textContent = itemAnalysis[j].py;
+            parseStyle(analysisTemplate.querySelector('.translation'), itemAnalysis[j].de);
+            chengyuTemplate.querySelector('.analysis').appendChild(analysisTemplate);
           }
-          _n.querySelector('article').setAttribute('id', 'day-'+_x);
-          _n.querySelector('h2').textContent = _x;
-          _n.querySelector('.chengyu').textContent = _c[_i][_x].cy;
-          _n.querySelector('.original').textContent = _c[_i][_x].or;
-          _n.querySelector('.definition-de').textContent = _c[_i][_x].dd;
-          _n.querySelector('.definition-zh').textContent = _c[_i][_x].dz;
-          document.querySelector('main').appendChild(_n);
-          const _k = document.createElement('a');
-          _k.setAttribute('href', '#');
-          _k.textContent = _x;
-          const _l = document.createElement('li');
-          const _r = 285 + (15 * _i);
-          _l.setAttribute('data-day', _x);
-          _l.style.transform = 'rotate('+_r+'deg) translate(var(--nav-radius), 0) rotate(-'+_r+'deg)',
-          _l.appendChild(_k);
-          _l.addEventListener('click', (_e) => {
-            _e.preventDefault();
-            _l.classList.add('active');
-            showDay(_l.dataset.day);
+          chengyuTemplate.querySelector('article').setAttribute('id', 'day-'+itemId);
+          chengyuTemplate.querySelector('h2').textContent = itemId;
+          chengyuTemplate.querySelector('.chengyu').textContent = chengyDefs[i][itemId].cy;
+          chengyuTemplate.querySelector('.original').textContent = chengyDefs[i][itemId].or;
+          chengyuTemplate.querySelector('.definition-de').textContent = chengyDefs[i][itemId].dd;
+          chengyuTemplate.querySelector('.definition-zh').textContent = chengyDefs[i][itemId].dz;
+          document.querySelector('main').appendChild(chengyuTemplate);
+          const listItemLink = document.createElement('a');
+          listItemLink.setAttribute('href', '#');
+          listItemLink.textContent = itemId;
+          const listItem = document.createElement('li');
+          const listItemAngle = 285 + (15 * i);
+          listItem.setAttribute('data-day', itemId);
+          listItem.style.transform = 'rotate('+listItemAngle+'deg) translate(var(--nav-radius), 0) rotate(-'+listItemAngle+'deg)',
+          listItem.appendChild(listItemLink);
+          listItem.addEventListener('click', (event) => {
+            event.preventDefault();
+            listItem.classList.add('active');
+            showDay(listItem.dataset.day);
             clearTimeout(clickTimeout);
             clickTimeout = setTimeout(() => {
-              _l.classList.remove('active');
+              listItem.classList.remove('active');
             }, 750);
           }, false);
-           if (_t.getMonth() == 11 && _t.getDate() >= parseInt(_x, 10)) { 
-            document.querySelector('#calendar ul').appendChild(_l);
+           if(today.getMonth() == 11 && today.getDate() >= parseInt(itemId, 10)) { 
+            document.querySelector('#calendar ul').appendChild(listItem);
           }
         }
-        if (_t.getMonth() == 11) { 
-          showDay(_t.getDate());
+        if(today.getMonth() == 11) { 
+          showDay(today.getDate());
         } 
         window.addEventListener('load', () => {
           document.fonts.ready.then(() => {
-            if (!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
+            if(!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
               const privacyModal = document.getElementById('privacy-modal');
               privacyModal.showModal();
               privacyModal.addEventListener('close', () => {
-                if (privacyModal.returnValue == 'ok'){
+                if(privacyModal.returnValue == 'ok'){
                   const fontStyle = document.createElement('style');
                   fontStyle.textContent = `
                     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
