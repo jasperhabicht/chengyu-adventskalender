@@ -3,11 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>Deutsche Chengyu | 德文成语</title>
-    <!-- Version 1.1: 2022-12-05 -->
+    <!-- Version 1.2: 2022-12-06 -->
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
-
     :root {
       --bg-gradient-shift: 0%;
       --nav-radius: 2000px;
@@ -54,8 +51,8 @@
       font-family: 'Noto Serif', 'Noto Serif SC', serif;
       font-size: 16pt;
       line-height: 1.5;
-      color: rgba(0, 0, 0, .85);
-      background-image: linear-gradient(45deg, rgba(255, 138, 0, .5), rgba(255, 0, 255, .5), rgba(0, 255, 255, .5));
+      color: rgba(0 0 0 / .85);
+      background-image: linear-gradient(45deg, rgba(255 138 0 / .5), rgba(255 0 255 / .5), rgba(0 255 255 / .5));
       background-position: var(--bg-gradient-shift) 50%;
       background-size: 500% 100%;
       -webkit-text-size-adjust: none;
@@ -71,7 +68,7 @@
 
     ::selection {
       background-color: rgba(var(--color-primary), .75);
-      color: rgba(255, 255, 255, 1);
+      color: rgba(255 255 255 / 1);
     }
 
     template {
@@ -105,9 +102,8 @@
       width: 500px;
       height: 500px;
       border-radius: 50%;
-      background-image: conic-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .5));
-      -webkit-mask-image: radial-gradient(rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1) 70%);
-      mask-image: radial-gradient(rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1) 70%);
+      background-image: conic-gradient(rgba(255 255 255 / 0), rgba(255 255 255 / .5));
+      mask-image: radial-gradient(rgba(0 0 0 / 0) 70%, rgba(0 0 0 / 1) 70%);
       animation: rotate 3s infinite;
       z-index: -20;
     }
@@ -134,7 +130,7 @@
       text-align: center;
       line-height: 2em;
       border-radius: 50%;
-      background-color: rgba(255, 255, 255, .5);
+      background-color: rgba(255 255 255 / .5);
       opacity: var(--nav-opacity);
       transition: transform 1s ease, opacity 1s ease;
     }
@@ -149,7 +145,7 @@
     }
 
     #calendar li:hover, #calendar li:focus-within {
-      background-color: rgba(255, 255, 255, .75);
+      background-color: rgba(255 255 255 /.75);
     }
 
     #calendar li:hover::before, #calendar li:focus-within::before {
@@ -159,7 +155,7 @@
       top: 0;
       left: 0;
       content: '';
-      border: 3px solid rgba(255, 255, 255, 1);
+      border: 3px solid rgba(255 255 255 / 1);
       border-radius: 50%;
       opacity: 1;
       width: 2em;
@@ -258,6 +254,48 @@
       opacity: .5;
     }
 
+    dialog {
+      max-width: 75%;
+      padding: 30px;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(255 255 255 / 0.75);
+      box-shadow: 0px 10px 20px rgba(0 0 0 / 0.25);
+      font-size: 0.8em;
+    }
+
+    dialog header {
+      display: block;
+      height: auto;
+      width: auto;
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+
+    dialog::backdrop {
+      backdrop-filter: blur(5px);
+    }
+
+    dialog p {
+      margin-bottom: 0.75em;
+    }
+
+    dialog button {
+      font-family: inherit;
+      font-size: inherit;
+      padding: 10px 20px;
+      margin-top: 1em;
+      margin-right: 1em;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0 0 0 / 0.1);
+      cursor: pointer;
+    }
+
+    dialog button:hover {
+      background: rgba(0 0 0 / 0.05);
+    }
+
     </style>
   </head>
 
@@ -299,6 +337,19 @@
       <dt><span class="characters"></span><span class="pinyin"></span></dt>
       <dd><span class="translation"></span></dd>
     </template>
+
+    <dialog id="privacy-modal">
+      <form method="dialog">
+        <header>
+          <p>Schriften von Google Fonts laden?</p>
+        </header>
+        <p>Zur optimalen Darstellung werden die Schriften Noto Sans und Noto Sans SC genutzt. Diese Schriften sind scheinbar nicht auf Ihrem Rechner installiert, Sie können aber von Google Fonts temporär geladen werden.</p>
+        <p>Beim Laden der Schriften von Google Fonts wird Ihre IP-Adresse an den Server von Google übertragen. Wie Google die übertragenen Daten verarbeitet, können Sie auf der <a href="https://developers.google.com/fonts/faq/privacy">Website von Google</a> nachlesen.</p>
+        <p>Sollen die oben genannten Schriften von Google Fonts geladen werden?</p>
+        <button value="cancel">Schriften nicht laden</button>
+        <button value="ok">Schriften von Google Fonts laden</button>
+      </form>
+    </dialog>
 
     <script id="chengyu-defs" type="application/json">
     [
@@ -713,6 +764,24 @@
         if (_t.getMonth() == 11) { 
           showDay(_t.getDate());
         } 
+        window.addEventListener('load', () => {
+          document.fonts.ready.then(() => {
+            if(!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
+              const privacyModal = document.getElementById('privacy-modal');
+              privacyModal.showModal();
+              privacyModal.addEventListener('close', () => {
+                if(privacyModal.returnValue == 'ok'){
+                  const fontStyle = document.createElement('style');
+                  fontStyle.textContent = `
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+                    `;
+                  document.head.appendChild(fontStyle); 
+                }
+              });
+            }
+          });
+        });
       })();
     </script>
 
