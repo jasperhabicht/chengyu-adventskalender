@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="de-de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Deutsche Chengyu | 德文成语</title>
+    <!-- Version 1.2: 2022-12-06 -->
+    <style>
+    :root {
+      --bg-gradient-shift: 0%;
+      --nav-radius: 2000px;
+      --nav-opacity: 0;
+      --nav-rotate: -90deg;
+    }
+
+    .color-set-1 {
+      --bg-gradient-shift: 25%;
+    }
+
+    .color-set-2 {
+      --bg-gradient-shift: 50%;
+    }
+
+    .color-set-3 {
+      --bg-gradient-shift: 75%;
+    }
+
+    .color-set-4 {
+      --bg-gradient-shift: 100%;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: grid;
+      position: relative;
+      grid-template-rows: 1fr 2em;
+      grid-template-columns: 1fr 850px 1fr;
+      grid-template-areas: '. main .' '. footer .';
+      justify-items: center;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Serif', 'Noto Serif SC', serif;
+      font-size: 16pt;
+      line-height: 1.5;
+      color: rgba(0 0 0 / .85);
+      background-image: linear-gradient(45deg, rgba(255 138 0 / .5), rgba(255 0 255 / .5), rgba(0 255 255 / .5));
+      background-position: var(--bg-gradient-shift) 50%;
+      background-size: 500% 100%;
+      -webkit-text-size-adjust: none;
+      overflow: hidden;
+      transition: background-position 2s ease;
+    }
+
+    body.show-nav {
+      --nav-radius: 350px;
+      --nav-opacity: 1;
+      --nav-rotate: 0deg;
+    }
+
+    ::selection {
+      background-color: rgba(var(--color-primary), .75);
+      color: rgba(255 255 255 / 1);
+    }
+
+    template {
+      display: none;
+    }
+
+    body > header, body > main {
+      grid-area: main;
+      display: grid;
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+
+    body > header {
+      align-items: center;
+      height: 850px;
+      width: 850px;
+      z-index: 20;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    #waiting {
+      display: none;
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background-image: conic-gradient(rgba(255 255 255 / 0), rgba(255 255 255 / .5));
+      mask-image: radial-gradient(rgba(0 0 0 / 0) 70%, rgba(0 0 0 / 1) 70%);
+      animation: rotate 3s infinite;
+      z-index: -20;
+    }
+
+    #calendar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      transform: rotate(var(--nav-rotate));
+      transition: transform 1s ease;
+    }
+
+    #calendar li {
+      position: absolute;
+      box-sizing: border-box;
+      top: 50%;
+      left: 50%;
+      padding: 0;
+      margin: -1em 0 0 -1em;
+      width: 2em;
+      height: 2em;
+      font-size: 1.5em;
+      font-weight: 700;
+      text-align: center;
+      line-height: 2em;
+      border-radius: 50%;
+      background-color: rgba(255 255 255 / .5);
+      opacity: var(--nav-opacity);
+      transition: transform 1s ease, opacity 1s ease;
+    }
+
+    #calendar li a {
+      display: inline-block;
+      text-decoration: none;
+      color: inherit;
+      outline: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #calendar li:hover, #calendar li:focus-within {
+      background-color: rgba(255 255 255 /.75);
+    }
+
+    #calendar li:hover::before, #calendar li:focus-within::before {
+      display: block;
+      position: absolute;
+      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      content: '';
+      border: 3px solid rgba(255 255 255 / 1);
+      border-radius: 50%;
+      opacity: 1;
+      width: 2em;
+      height: 2em;
+      pointer-events: none;
+    }
+
+    #calendar li.active::before {
+      animation: select .5s ease forwards;
+    }
+
+    @keyframes select {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(5);
+        opacity: 0;
+      }
+    }
+
+    main {
+      grid-template-areas: 'day';
+      height: 500px;
+      width: 650px;
+    }
+
+    article {
+      grid-area: day;
+      align-items: start;
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+
+    .display {
+      text-align: center;
+    }
+
+    .display h2, p, dl {
+      margin: 0;
+    }
+
+    .display h2 {
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    .display .chengyu {
+      font-weight: 900;
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .display .original {
+      font-weight: 700;
+    }
+
+    .display dl {
+      display: inline-block;
+      width: 400px;
+      text-align: left;
+      margin: 2em 0;
+    }
+
+    .display dt {
+      clear: both;
+      float: left;
+      padding-right: .5em;
+      font-weight: 700;
+    }
+
+    .display dd {
+      display: block;
+      margin-left: 5.5em;
+    }
+
+    .display .pinyin {
+      font-weight: 400;
+      opacity: .75;
+      padding-left: .5em;
+    }
+
+    .display .pinyin::before {
+      content: '\2039\200a';
+    }
+
+    .display .pinyin::after {
+      content: '\200a\203a';
+    }
+
+    /* spoiler function */
+
+    main {
+      transform: scale(1.5) translateY(50px);
+      transform-origin: top;
+      transition: transform .5s ease;
+    }
+
+    .display .spoiler {
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+
+    header:hover + main {
+      transform: scale(1) translateY(0px);
+    }
+
+    header:hover + main .display .spoiler {
+      opacity: 1;
+    }
+
+    /* === */
+
+    footer {
+      grid-area: footer;
+      box-sizing: border-box;
+      margin-bottom: 1em;
+      opacity: .75;
+    }
+
+    dialog {
+      max-width: 75%;
+      padding: 30px;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(255 255 255 / 0.75);
+      box-shadow: 0px 10px 20px rgba(0 0 0 / 0.25);
+      font-size: 0.8em;
+    }
+
+    dialog header {
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+
+    dialog::backdrop {
+      backdrop-filter: blur(5px);
+    }
+
+    dialog p {
+      margin-bottom: 0.75em;
+    }
+
+    dialog button {
+      font-family: inherit;
+      font-size: inherit;
+      padding: 10px 20px;
+      margin-top: 1em;
+      margin-right: 1em;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0 0 0 / 0.1);
+      cursor: pointer;
+    }
+
+    dialog button:hover {
+      background: rgba(0 0 0 / 0.05);
+    }
+    </style>
+  </head>
+
+  <body id="top">
+
+    <header>
+        <nav id="calendar">
+          <ul>
+          </ul>
+        </nav>
+    </header>
+
+    <main>
+      <div id="waiting">
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2022&ndash;2023 | Jasper Habicht</p>
+    </footer>
+
+    <template id="template-chengyu">
+      <article class="display">
+        <header>
+          <h2></h2>
+          <p class="chengyu"></p>
+          <p class="original spoiler"></p>
+        </header>
+        <section class="spoiler">
+          <dl class="analysis">
+          </dl>
+        </section>
+        <section class="spoiler">
+          <p class="definition-de"></p>
+          <p class="definition-zh"></p>
+        </section>
+      </article>
+    </template>
+
+    <template id="template-analysis">
+      <dt><span class="characters"></span><span class="pinyin"></span></dt>
+      <dd><span class="translation"></span></dd>
+    </template>
+
+    <dialog id="privacy-modal">
+      <form method="dialog">
+        <header>
+          <p>Schriften von Google Fonts laden?</p>
+        </header>
+        <p>Zur optimalen Darstellung werden die Schriften Noto Sans und Noto Sans SC genutzt. Diese Schriften sind scheinbar nicht auf Ihrem Rechner installiert, Sie können aber von Google Fonts temporär geladen werden.</p>
+        <p>Beim Laden der Schriften von Google Fonts wird Ihre IP-Adresse an den Server von Google übertragen. Wie Google die übertragenen Daten verarbeitet, können Sie auf der <a href="https://developers.google.com/fonts/faq/privacy">Website von Google</a> nachlesen.</p>
+        <p>Sollen die oben genannten Schriften von Google Fonts geladen werden?</p>
+        <button value="cancel">Schriften nicht laden</button>
+        <button value="ok">Schriften von Google Fonts laden</button>
+      </form>
+    </dialog>
+
+    <script id="chengyu-defs" type="application/json">
+    [
+      { "1" :
+        { "cy" : "立于软管",
+          "or" : "auf dem Schlauch stehen",
+          "an" : [
+            { "zh" : "立", "py" : "lǜ", "de" : "stehen" },
+            { "zh" : "于", "py" : "yú", "de" : "in, auf, an" },
+            { "zh" : "软管", "py" : "ruǎnguǎn", "de" : "Schlauch" }
+          ],
+          "dd" : "einen Sachverhalt nur langsam erfassen",
+          "dz" : "摸不着头脑"
+        }
+      },
+      { "2" :
+        { "cy" : "末洞鸣笛",
+          "or" : "aus dem letzten Loch pfeifen",
+          "an" : [
+            { "zh" : "末", "py" : "mò", "de" : "letztes" },
+            { "zh" : "洞", "py" : "dòng", "de" : "Loch" },
+            { "zh" : "鸣", "py" : "míng", "de" : "blasen, flöten" },
+            { "zh" : "笛", "py" : "dí", "de" : "Flöte" }
+          ],
+          "dd" : "am Ende seiner Kräfte sein",
+          "dz" : "山穷水尽，精疲力竭"
+        }
+      },
+      { "3" :
+        { "cy" : "包里购猫",
+          "or" : "die Katze im Sack kaufen",
+          "an" : [
+            { "zh" : "包", "py" : "bāo", "de" : "Sack, Tasche" },
+            { "zh" : "里", "py" : "lǐ", "de" : "darinnen, in" },
+            { "zh" : "购", "py" : "gòu", "de" : "erwerben" },
+            { "zh" : "猫", "py" : "māo", "de" : "Katze" }
+          ],
+          "dd" : "etwas erwerben, ohne vorher zu wissen, worauf man sich einlässt",
+          "dz" : "在不知道后果的情况下获取东西"
+        }
+      },
+      { "4" :
+        { "cy" : "昨日之雪",
+          "or" : "Schnee von gestern",
+          "an" : [
+            { "zh" : "昨", "py" : "zuó", "de" : "gestern" },
+            { "zh" : "日", "py" : "rì", "de" : "Tag" },
+            { "zh" : "之", "py" : "zhī", "de" : "<em>Possessivpartikel</em>, <em>Demonstrativpronomen</em>" },
+            { "zh" : "雪", "py" : "xué", "de" : "Schnee" }
+          ],
+          "dd" : "nicht mehr von Interesse, nicht mehr aktuell sein",
+          "dz" : "不感兴趣，不再热门"
+        }
+      },
+      { "5" :
+        { "cy" : "悬于丝线",
+          "or" : "am seidenen Faden hängen",
+          "an" : [
+            { "zh" : "悬", "py" : "shǐ", "de" : "hängen" },
+            { "zh" : "于", "py" : "yú", "de" : "in, auf, an" },
+            { "zh" : "丝", "py" : "sī", "de" : "Seide" },
+            { "zh" : "线", "py" : "xiàn", "de" : "Faden" }
+          ],
+          "dd" : "durch eine konkrete Gefahr akut bedroht sein",
+          "dz" : "受到危险的严重威胁"
+        }
+      },
+      { "6" :
+        { "cy" : "师多粥坏",
+          "or" : "viele Köche verderben den Brei",
+          "an" : [
+            { "zh" : "师", "py" : "shī", "de" : "Meister, Lehrer, Experte" },
+            { "zh" : "多", "py" : "duō", "de" : "viele, zahlreich" },
+            { "zh" : "粥", "py" : "zhōu", "de" : "Reisbrei" },
+            { "zh" : "坏", "py" : "huài", "de" : "kaputt, verdorben" }
+          ],
+          "dd" : "wenn zu viele an derselben Sache arbeiten, wird nichts daraus",
+          "dz" : "太多人在做一件事，就没有结果"
+        }
+      },
+      { "7" :
+        { "cy" : "牛皮非应",
+          "or" : "das geht auf keine Kuhhaut",
+          "an" : [
+            { "zh" : "牛", "py" : "niú", "de" : "Kuh, Rind" },
+            { "zh" : "皮", "py" : "yìn", "de" : "Haut, Leder" },
+            { "zh" : "非", "py" : "fēi", "de" : "nicht" },
+            { "zh" : "应", "py" : "yìng", "de" : "fassen, erwidern, aushalten" }
+          ],
+          "dd" : "nicht mehr zu ertragen sein, jedes Maß übersteigen",
+          "dz" : "受不了、难以忍受的事"
+        }
+      },
+      { "8" :
+        { "cy" : "累滴刻石",
+          "or" : "steter Tropfen höhlt den Stein",
+          "an" : [
+            { "zh" : "累", "py" : "lěi", "de" : "kontiniuerlich, kumuliert" },
+            { "zh" : "滴", "py" : "dī", "de" : "Tropfen" },
+            { "zh" : "刻", "py" : "kè", "de" : "einkerben, aushöhlen" },
+            { "zh" : "石", "py" : "shí", "de" : "Stein, Fels" }
+          ],
+          "dd" : "beharrliches Vorgehen führt zum Ziel",
+          "dz" : "坚持不懈地行动才能实现目标"
+        }
+      },
+      { "9" :
+        { "cy" : "青枝不及",
+          "or" : "auf keinen grünen Zweig kommen",
+          "an" : [
+            { "zh" : "青", "py" : "qīng", "de" : "grün, blau, jung" },
+            { "zh" : "枝", "py" : "zhī", "de" : "Ast" },
+            { "zh" : "不", "py" : "bù", "de" : "nicht" },
+            { "zh" : "及", "py" : "jí", "de" : "erreichen" }
+          ],
+          "dd" : "nicht vorankommen, erfolglos bleiben",
+          "dz" : "没有取得进展，仍然不成功"
+        }
+      },
+      { "10" :
+        { "cy" : "口不盖叶",
+          "or" : "kein Blatt vor den Mund nehmen",
+          "an" : [
+            { "zh" : "口", "py" : "kǒu", "de" : "Mund" },
+            { "zh" : "不", "py" : "bù", "de" : "nicht" },
+            { "zh" : "盖", "py" : "gài", "de" : "bedecken" },
+            { "zh" : "叶", "py" : "yè", "de" : "Blatt" }
+          ],
+          "dd" : "Dinge offen und direkt ansprechen, seine Meinung sagen",
+          "dz" : "开诚布公，直言不讳"
+        }
+      },
+      { "11" :
+        { "cy" : "踏入油壶",
+          "or" : "ins Fettnäpfchen treten",
+          "an" : [
+            { "zh" : "踏", "py" : "tà", "de" : "treten, steigen" },
+            { "zh" : "入", "py" : "rù", "de" : "hinein" },
+            { "zh" : "油", "py" : "yóu", "de" : "Fett, Öl" },
+            { "zh" : "壶", "py" : "hú", "de" : "Tiegel, Topf" }
+          ],
+          "dd" : "mit einer unbedachten Äußerung einen anderen kränken oder beleidigen",
+          "dz" : "通过轻率的言论冒犯他人"
+        }
+      },
+      { "12" :
+        { "cy" : "如牛见山",
+          "or" : "wie der Ochs vorm Berg",
+          "an" : [
+            { "zh" : "如", "py" : "rú", "de" : "wie, als ob" },
+            { "zh" : "牛", "py" : "niú", "de" : "Kuh, Rind" },
+            { "zh" : "见", "py" : "jiàn", "de" : "sehen, erblicken" },
+            { "zh" : "山", "py" : "shān", "de" : "Berg" }
+          ],
+          "dd" : "unwissend, wie es weitergehen soll",
+          "dz" : "不知道下一步该做什么"
+        }
+      },
+      { "13" :
+        { "cy" : "跳逾自荫",
+          "or" : "über seinen Schatten springen",
+          "an" : [
+            { "zh" : "播", "py" : "tiào", "de" : "springen" },
+            { "zh" : "风", "py" : "yú", "de" : "über hinaus" },
+            { "zh" : "获", "py" : "zì", "de" : "eigen, selbst" },
+            { "zh" : "飙", "py" : "yìn", "de" : "Schatten" }
+          ],
+          "dd" : "sich überwinden, etwas tun, was man sonst nie tun würde",
+          "dz" : "战胜自己，做一些本来不会做的事"
+        }
+      },
+      { "14" :
+        { "cy" : "言省热粥",
+          "or" : "um den heißen Brei herumreden",
+          "an" : [
+            { "zh" : "言", "py" : "yán", "de" : "Worte, Sprache, sprechen" },
+            { "zh" : "省", "py" : "shěng", "de" : "auslassen, sparen" },
+            { "zh" : "热", "py" : "rè", "de" : "heiß" },
+            { "zh" : "粥", "py" : "zhōu", "de" : "Reisbrei" }
+          ],
+          "dd" : "eine Sache nicht offen ansprechen",
+          "dz" : "拐弯抹角，不公开讨论某件事"
+        }
+      },
+      { "15" :
+        { "cy" : "以蚊做象",
+          "or" : "aus einer Mücke einen Elefanten machen",
+          "an" : [
+            { "zh" : "以", "py" : "yǐ", "de" : "nehmen, um zu" },
+            { "zh" : "蚊", "py" : "wén", "de" : "Mücke" },
+            { "zh" : "做", "py" : "zuò", "de" : "machen" },
+            { "zh" : "林", "py" : "xiàng", "de" : "Elefant" }
+          ],
+          "dd" : "aus einer unbedeutenden Kleinigkeit etwas Bedeutendes machen",
+          "dz" : "小题大做，将一件微不足道的小事变成重要的事情"
+        }
+      },
+      { "16" :
+        { "cy" : "寓居月背",
+          "or" : "hinterm Mond leben",
+          "an" : [
+            { "zh" : "寓居", "py" : "yùjū", "de" : "an einem Ort wohnen" },
+            { "zh" : "月", "py" : "yuè", "de" : "Mond" },
+            { "zh" : "背", "py" : "bèi", "de" : "Rückseite" }
+          ],
+          "dd" : "nicht auf dem neuesten Stand sein, aktuelle Entwicklungen verpasst haben",
+          "dz" : "没有跟上最新情况，错过了当前的发展"
+        }
+      },
+      { "17" :
+        { "cy" : "如菾似菜",
+          "or" : "wie Kraut und Rüben",
+          "an" : [
+            { "zh" : "如", "py" : "rú", "de" : "wie, als ob" },
+            { "zh" : "菾", "py" : "tián", "de" : "Zuckerrübe" },
+            { "zh" : "似", "py" : "sì", "de" : "gleichen, ähneln" },
+            { "zh" : "菜", "py" : "cài", "de" : "Kohl, Kraut" }
+          ],
+          "dd" : "durcheinander, in Unordnung",
+          "dz" : "乱七八载，混乱的"
+        }
+      },
+      { "18" :
+        { "cy" : "以笑下窖",
+          "or" : "zum Lachen in den Keller gehen", 
+          "an" : [
+            { "zh" : "以", "py" : "yǐ", "de" : "nehmen, um zu" },
+            { "zh" : "笑", "py" : "xiào", "de" : "lachen" },
+            { "zh" : "下", "py" : "xià", "de" : "unten, herunter, hinabgehen" },
+            { "zh" : "窖", "py" : "jiào", "de" : "Keller" }
+          ],
+          "dd" : "humorlos sein",
+          "dz" : "没幽默感"
+        }
+      },
+      { "19" : 
+        { "cy" : "",
+          "or" : "", 
+          "an" : [ ],
+          "dd" : "",
+          "dz" : ""
+        } 
+      },
+      { "20" : 
+        { "cy" : "",
+          "or" : "", 
+          "an" : [ ],
+          "dd" : "",
+          "dz" : ""
+        } 
+      },
+      { "21" : 
+        { "cy" : "",
+          "or" : "", 
+          "an" : [ ],
+          "dd" : "",
+          "dz" : ""
+        } 
+      },
+      { "22" :
+        { "cy" : "如猴蹲磨",
+          "or" : "wie ein Affe auf dem Schleifstein",
+          "an" : [
+            { "zh" : "如", "py" : "rú", "de" : "wie, als ob" },
+            { "zh" : "猴", "py" : "hóu", "de" : "Affe" },
+            { "zh" : "蹲", "py" : "dūn", "de" : "hocken" },
+            { "zh" : "磨", "py" : "mò", "de" : "Schleifstein" }
+          ],
+          "dd" : "in krummer Haltung dasitzen und dadurch lächerlich wirken",
+          "dz" : "弯腰坐着，显得很可笑"
+        }
+      },
+      { "23" :
+        { "cy" : "柜少一杯",
+          "or" : "nicht alle Tassen im Schrank haben",
+          "an" : [
+            { "zh" : "柜", "py" : "guì", "de" : "Schrank, Regal" },
+            { "zh" : "少", "py" : "shǎo", "de" : "wenig, fehlen" },
+            { "zh" : "一", "py" : "yī", "de" : "eins" },
+            { "zh" : "杯", "py" : "bēi", "de" : "Tasse, Becher" }
+          ],
+          "dd" : "geistig nicht normal sein",
+          "dz" : "精神不正常"
+        }
+      },
+      { "24" :
+        { "cy" : "放猫出包",
+          "or" : "die Katze aus dem Sack lassen",
+          "an" : [
+            { "zh" : "放", "py" : "fàng", "de" : "freilassen" },
+            { "zh" : "猫", "py" : "māo", "de" : "Katze" },
+            { "zh" : "出", "py" : "chū", "de" : "herauskommen" },
+            { "zh" : "包", "py" : "bāo", "de" : "Sack, Tasche" }
+          ],
+          "dd" : "jemandem etwas verraten, ein Geheimnis lüften",
+          "dz" : "揭开秘密"
+        }
+      }
+    ]
+    </script>
+
+    <script>
+      (() => {
+        let hideTimeout = false;
+        const showDay = (dayNumber) => {
+          const dayElements = document.querySelectorAll('*[id^="day-"]');
+          for(let i = 0, j = dayElements.length; i < j; i += 1) {
+            dayElements[i].style.opacity = 0;
+            dayElements[i].style.zIndex = 0;
+          }
+          for(let i = 0; i < document.body.classList.length; i += 1) {
+            const bodyClasses = document.body.classList[i];
+            if(bodyClasses.startsWith('color-set-')) {
+              document.body.classList.remove(bodyClasses);
+            }
+          }
+          document.body.classList.add('color-set-'+parseInt(dayNumber % 4 + 1));
+          try {
+            document.querySelector('#day-'+dayNumber).style.opacity = 1;
+            document.querySelector('#day-'+dayNumber).style.zIndex = 10;
+          } catch {
+            return false;
+          }
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => {
+            document.body.classList.remove('show-nav');
+          }, 250);
+        }
+        document.querySelector('body > header').addEventListener('click', (event) => {
+          if(event.target == document.querySelector('body > header')) {
+            event.preventDefault();
+            document.body.classList.toggle('show-nav');
+          }
+        }, false);
+        const parseStyle = (pElement, string) => {
+          matches = string.match(/(.*?<\/?em>)/g);
+          if(matches != null) {
+            for(let i = 0, j = matches.length; i < j; i += 1) {
+              if(matches[i].match(/<em>/) != null) {
+                pElement.appendChild(document.createTextNode(matches[i].replace(/<em>/, '')));
+              } else {
+                const emElement = document.createElement('em');
+                emElement.appendChild(document.createTextNode(matches[i].replace(/<\/em>/, '')));
+                pElement.appendChild(emElement);
+              }
+            }
+          } else {
+            pElement.textContent = string;
+          }
+        }
+        let clickTimeout = false;
+        const today = new Date();
+        const chengyDefs = JSON.parse(document.getElementById('chengyu-defs').textContent);
+        for(let i = 0, j = chengyDefs.length; i < j; i += 1) {
+          const chengyuTemplate = document.importNode(document.querySelector('#template-chengyu').content, true);
+          const itemId = Object.keys(chengyDefs[i])[0];
+          const itemAnalysis = chengyDefs[i][itemId].an;
+          for(let k = 0, l = itemAnalysis.length; k < l; k += 1) {
+            const analysisTemplate = document.importNode(document.querySelector('#template-analysis').content, true);
+            analysisTemplate.querySelector('.characters').textContent = itemAnalysis[k].zh;
+            analysisTemplate.querySelector('.pinyin').textContent = itemAnalysis[k].py;
+            parseStyle(analysisTemplate.querySelector('.translation'), itemAnalysis[k].de);
+            chengyuTemplate.querySelector('.analysis').appendChild(analysisTemplate);
+          }
+          chengyuTemplate.querySelector('article').setAttribute('id', 'day-'+itemId);
+          chengyuTemplate.querySelector('h2').textContent = itemId;
+          chengyuTemplate.querySelector('.chengyu').textContent = chengyDefs[i][itemId].cy;
+          chengyuTemplate.querySelector('.original').textContent = chengyDefs[i][itemId].or;
+          chengyuTemplate.querySelector('.definition-de').textContent = chengyDefs[i][itemId].dd;
+          chengyuTemplate.querySelector('.definition-zh').textContent = chengyDefs[i][itemId].dz;
+          document.querySelector('main').appendChild(chengyuTemplate);
+          const listItemLink = document.createElement('a');
+          listItemLink.setAttribute('href', '#');
+          listItemLink.textContent = itemId;
+          const listItem = document.createElement('li');
+          const listItemAngle = 285 + (15 * i);
+          listItem.setAttribute('data-day', itemId);
+          listItem.style.transform = 'rotate('+listItemAngle+'deg) translate(var(--nav-radius), 0) rotate(-'+listItemAngle+'deg)',
+          listItem.appendChild(listItemLink);
+          listItem.addEventListener('click', (event) => {
+            event.preventDefault();
+            listItem.classList.add('active');
+            showDay(listItem.dataset.day);
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+              listItem.classList.remove('active');
+            }, 750);
+          }, false);
+           if(today.getMonth() == 11 && today.getDate() >= parseInt(itemId, 10)) {
+            document.querySelector('#calendar ul').appendChild(listItem);
+          }
+        }
+        if(today.getMonth() == 11) {
+          showDay(today.getDate());
+        }
+        window.addEventListener('load', () => {
+          document.fonts.ready.then(() => {
+            if(!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
+              const privacyModal = document.getElementById('privacy-modal');
+              privacyModal.showModal();
+              privacyModal.addEventListener('close', () => {
+                if(privacyModal.returnValue == 'ok'){
+                  const fontStyle = document.createElement('style');
+                  fontStyle.textContent = `
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+                    `;
+                  document.head.appendChild(fontStyle);
+                }
+              });
+            }
+          });
+        });
+      })();
+    </script>
+
+  </body>
+</html>

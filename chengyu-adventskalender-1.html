@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="de-de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Deutsche Chengyu | 德文成语</title>
+    <!-- Version 1.2: 2022-12-06 -->
+    <style>
+    :root {
+      --bg-gradient-shift: 0%;
+      --nav-radius: 2000px;
+      --nav-opacity: 0;
+      --nav-rotate: -90deg;
+    }
+
+    .color-set-1 {
+      --bg-gradient-shift: 25%;
+    }
+
+    .color-set-2 {
+      --bg-gradient-shift: 50%;
+    }
+
+    .color-set-3 {
+      --bg-gradient-shift: 75%;
+    }
+
+    .color-set-4 {
+      --bg-gradient-shift: 100%;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: grid;
+      position: relative;
+      grid-template-rows: 1fr 2em;
+      grid-template-columns: 1fr 850px 1fr;
+      grid-template-areas: '. main .' '. footer .';
+      justify-items: center;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Serif', 'Noto Serif SC', serif;
+      font-size: 16pt;
+      line-height: 1.5;
+      color: rgba(0 0 0 / .85);
+      background-image: linear-gradient(45deg, rgba(255 138 0 / .5), rgba(255 0 255 / .5), rgba(0 255 255 / .5));
+      background-position: var(--bg-gradient-shift) 50%;
+      background-size: 500% 100%;
+      -webkit-text-size-adjust: none;
+      overflow: hidden;
+      transition: background-position 2s ease;
+    }
+
+    body.show-nav {
+      --nav-radius: 350px;
+      --nav-opacity: 1;
+      --nav-rotate: 0deg;
+    }
+
+    ::selection {
+      background-color: rgba(var(--color-primary), .75);
+      color: rgba(255 255 255 / 1);
+    }
+
+    template {
+      display: none;
+    }
+
+    body > header, body > main {
+      grid-area: main;
+      display: grid;
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+
+    body > header {
+      align-items: center;
+      height: 850px;
+      width: 850px;
+      z-index: 20;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    #waiting {
+      display: none;
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background-image: conic-gradient(rgba(255 255 255 / 0), rgba(255 255 255 / .5));
+      mask-image: radial-gradient(rgba(0 0 0 / 0) 70%, rgba(0 0 0 / 1) 70%);
+      animation: rotate 3s infinite;
+      z-index: -20;
+    }
+
+    #calendar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      transform: rotate(var(--nav-rotate));
+      transition: transform 1s ease;
+    }
+
+    #calendar li {
+      position: absolute;
+      box-sizing: border-box;
+      top: 50%;
+      left: 50%;
+      padding: 0;
+      margin: -1em 0 0 -1em;
+      width: 2em;
+      height: 2em;
+      font-size: 1.5em;
+      font-weight: 700;
+      text-align: center;
+      line-height: 2em;
+      border-radius: 50%;
+      background-color: rgba(255 255 255 / .5);
+      opacity: var(--nav-opacity);
+      transition: transform 1s ease, opacity 1s ease;
+    }
+
+    #calendar li a {
+      display: inline-block;
+      text-decoration: none;
+      color: inherit;
+      outline: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #calendar li:hover, #calendar li:focus-within {
+      background-color: rgba(255 255 255 /.75);
+    }
+
+    #calendar li:hover::before, #calendar li:focus-within::before {
+      display: block;
+      position: absolute;
+      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      content: '';
+      border: 3px solid rgba(255 255 255 / 1);
+      border-radius: 50%;
+      opacity: 1;
+      width: 2em;
+      height: 2em;
+      pointer-events: none;
+    }
+
+    #calendar li.active::before {
+      animation: select .5s ease forwards;
+    }
+
+    @keyframes select {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(5);
+        opacity: 0;
+      }
+    }
+
+    main {
+      grid-template-areas: 'day';
+      height: 500px;
+      width: 650px;
+    }
+
+    article {
+      grid-area: day;
+      align-items: start;
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+
+    .display {
+      text-align: center;
+    }
+
+    .display h2, p, dl {
+      margin: 0;
+    }
+
+    .display h2 {
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    .display .chengyu {
+      font-weight: 900;
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .display .original {
+      font-weight: 700;
+    }
+
+    .display dl {
+      display: inline-block;
+      width: 400px;
+      text-align: left;
+      margin: 2em 0;
+    }
+
+    .display dt {
+      clear: both;
+      float: left;
+      padding-right: .5em;
+      font-weight: 700;
+    }
+
+    .display dd {
+      display: block;
+      margin-left: 5.5em;
+    }
+
+    .display .pinyin {
+      font-weight: 400;
+      opacity: .75;
+      padding-left: .5em;
+    }
+
+    .display .pinyin::before {
+      content: '\2039\200a';
+    }
+
+    .display .pinyin::after {
+      content: '\200a\203a';
+    }
+
+    /* spoiler function */
+
+    main {
+      transform: scale(1.5) translateY(50px);
+      transform-origin: top;
+      transition: transform .5s ease;
+    }
+
+    .display .spoiler {
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+
+    header:hover + main {
+      transform: scale(1) translateY(0px);
+    }
+
+    header:hover + main .display .spoiler {
+      opacity: 1;
+    }
+
+    /* === */
+
+    footer {
+      grid-area: footer;
+      box-sizing: border-box;
+      margin-bottom: 1em;
+      opacity: .75;
+    }
+
+    dialog {
+      max-width: 75%;
+      padding: 30px;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(255 255 255 / 0.75);
+      box-shadow: 0px 10px 20px rgba(0 0 0 / 0.25);
+      font-size: 0.8em;
+    }
+
+    dialog header {
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+
+    dialog::backdrop {
+      backdrop-filter: blur(5px);
+    }
+
+    dialog p {
+      margin-bottom: 0.75em;
+    }
+
+    dialog button {
+      font-family: inherit;
+      font-size: inherit;
+      padding: 10px 20px;
+      margin-top: 1em;
+      margin-right: 1em;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0 0 0 / 0.1);
+      cursor: pointer;
+    }
+
+    dialog button:hover {
+      background: rgba(0 0 0 / 0.05);
+    }
+    </style>
+  </head>
+
+  <body id="top">
+
+    <header>
+        <nav id="calendar">
+          <ul>
+          </ul>
+        </nav>
+    </header>
+
+    <main>
+      <div id="waiting">
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2022&ndash;2023 | Jasper Habicht</p>
+    </footer>
+
+    <template id="template-chengyu">
+      <article class="display">
+        <header>
+          <h2></h2>
+          <p class="chengyu"></p>
+          <p class="original spoiler"></p>
+        </header>
+        <section class="spoiler">
+          <dl class="analysis">
+          </dl>
+        </section>
+        <section class="spoiler">
+          <p class="definition-de"></p>
+          <p class="definition-zh"></p>
+        </section>
+      </article>
+    </template>
+
+    <template id="template-analysis">
+      <dt><span class="characters"></span><span class="pinyin"></span></dt>
+      <dd><span class="translation"></span></dd>
+    </template>
+
+    <dialog id="privacy-modal">
+      <form method="dialog">
+        <header>
+          <p>Schriften von Google Fonts laden?</p>
+        </header>
+        <p>Zur optimalen Darstellung werden die Schriften Noto Sans und Noto Sans SC genutzt. Diese Schriften sind scheinbar nicht auf Ihrem Rechner installiert, Sie können aber von Google Fonts temporär geladen werden.</p>
+        <p>Beim Laden der Schriften von Google Fonts wird Ihre IP-Adresse an den Server von Google übertragen. Wie Google die übertragenen Daten verarbeitet, können Sie auf der <a href="https://developers.google.com/fonts/faq/privacy">Website von Google</a> nachlesen.</p>
+        <p>Sollen die oben genannten Schriften von Google Fonts geladen werden?</p>
+        <button value="cancel">Schriften nicht laden</button>
+        <button value="ok">Schriften von Google Fonts laden</button>
+      </form>
+    </dialog>
+
+    <script id="chengyu-defs" type="application/json">
+    [
+      { "1" :
+        { "cy" : "葎失麦遗",
+          "or" : "da ist Hopfen und Malz verloren",
+          "an" : [
+            { "zh" : "葎", "py" : "lǜ", "de" : "Hopfen, Japanischer Hopfen" },
+            { "zh" : "失", "py" : "shī", "de" : "verlieren, versagen" },
+            { "zh" : "麦", "py" : "mài", "de" : "Weizen, Gerste" },
+            { "zh" : "遗", "py" : "yí", "de" : "verlieren, auslassen, hinter sich lassen" }
+          ],
+          "dd" : "die Situation ist hoffnungslos, es gibt keinen Ausweg aus der misslichen Lage",
+          "dz" : "穷途末路，无路可退了"
+        }
+      },
+      { "2" :
+        { "cy" : "一拍两蝇",
+          "or" : "zwei Fliegen mit einer Klappe schlagen",
+          "an" : [
+            { "zh" : "一", "py" : "yī", "de" : "eins" },
+            { "zh" : "拍", "py" : "pāi", "de" : "schlagen, aufnehmen" },
+            { "zh" : "两", "py" : "liǎng", "de" : "zwei, beide" },
+            { "zh" : "蝇", "py" : "yíng", "de" : "Fliege" }
+          ],
+          "dd" : "zwei Ziele mit ein und derselben Handlung erreichen",
+          "dz" : "用一个相同的行动实现两个目标"
+        }
+      },
+      { "3" :
+        { "cy" : "良机有三",
+          "or" : "aller guten Dinge sind drei",
+          "an" : [
+            { "zh" : "良", "py" : "liáng", "de" : "gut" },
+            { "zh" : "机", "py" : "jī", "de" : "Chance, Möglichkeit, Maschine" },
+            { "zh" : "有", "py" : "yǒu", "de" : "es gibt, haben" },
+            { "zh" : "三", "py" : "sān", "de" : "drei" }
+          ],
+          "dd" : "nach zwei Fehlversuchen kann der dritte Versuch noch zum Erfolg verhelfen",
+          "dz" : "在两次失败的尝试之后，第三次尝试仍然可以帮助获得成功"
+        }
+      },
+      { "4" :
+        { "cy" : "置之荒漠",
+          "or" : "jemanden in die Wüste schicken",
+          "an" : [
+            { "zh" : "置", "py" : "zhì", "de" : "stellen, positionieren, platzieren" },
+            { "zh" : "之", "py" : "zhī", "de" : "<em>Possessivpartikel</em>, <em>Demonstrativpronomen</em>" },
+            { "zh" : "荒漠", "py" : "huāngmò", "de" : "Ödnis, Wüste" }
+          ],
+          "dd" : "jemanden unehrenhaft fortschicken oder entlassen",
+          "dz" : "遣送走人或不辞而别"
+        }
+      },
+      { "5" :
+        { "cy" : "使五属偶",
+          "or" : "Fünfe gerade sein lassen",
+          "an" : [
+            { "zh" : "使", "py" : "shǐ", "de" : "verwenden, veranlassen, lassen" },
+            { "zh" : "五", "py" : "wǔ", "de" : "fünf" },
+            { "zh" : "属", "py" : "shǔ", "de" : "Kategorie, zugeordnet, zu etwas gehören" },
+            { "zh" : "偶", "py" : "ǒu", "de" : "Paar, gerade (Zahl)" }
+          ],
+          "dd" : "etwas eigentlich nicht Richtiges durchgehen lassen",
+          "dz" : "让一些实际上不正确的东西通过"
+        }
+      },
+      { "6" :
+        { "cy" : "自摸己鼻",
+          "or" : "sich an die eigene Nase fassen",
+          "an" : [
+            { "zh" : "自", "py" : "zì", "de" : "selbst" },
+            { "zh" : "摸", "py" : "mō", "de" : "anfassen, berühren, streichen, greifen" },
+            { "zh" : "己", "py" : "jǐ", "de" : "selbst, eigen" },
+            { "zh" : "鼻", "py" : "bí", "de" : "Nase" }
+          ],
+          "dd" : "selbstkritisch sein (meist als Aufforderung)",
+          "dz" : "自我批评 (主要是作为呼吁)"
+        }
+      },
+      { "7" :
+        { "cy" : "七印之书",
+          "or" : "ein Buch mit sieben Siegeln",
+          "an" : [
+            { "zh" : "七", "py" : "qī", "de" : "sieben" },
+            { "zh" : "印", "py" : "yìn", "de" : "Siegel, Stempel, drucken" },
+            { "zh" : "之", "py" : "zhī", "de" : "<em>Possessivpartikel</em>, <em>Demonstrativpronomen</em>" },
+            { "zh" : "书", "py" : "shū", "de" : "Buch, Dokument" }
+          ],
+          "dd" : "eine völlig unverständliche und räselhafte Tatsache",
+          "dz" : "一个完全无法理解和令人费解的事实"
+        }
+      },
+      { "8" :
+        { "cy" : "敲钉中头",
+          "or" : "den Nagel auf den Kopf treffen",
+          "an" : [
+            { "zh" : "敲", "py" : "qiāo", "de" : "klopfen, schlagen" },
+            { "zh" : "钉", "py" : "dīng", "de" : "Nagel" },
+            { "zh" : "中", "py" : "zhòng", "de" : "etwas treffen" },
+            { "zh" : "头", "py" : "tóu", "de" : "Kopf" }
+          ],
+          "dd" : "die richtigen Worte oder die richtige Antwort finden",
+          "dz" : "寻找正确的词语或正确的答案"
+        }
+      },
+      { "9" :
+        { "cy" : "全身屋外",
+          "or" : "ganz aus dem Häuschen sein",
+          "an" : [
+            { "zh" : "全", "py" : "quán", "de" : "ganz, vollkommen" },
+            { "zh" : "身", "py" : "shēn", "de" : "Körper" },
+            { "zh" : "屋", "py" : "wū", "de" : "Haus, Raum" },
+            { "zh" : "外", "py" : "wài", "de" : "draußen, außerhalb" }
+          ],
+          "dd" : "vor Begeisterung oder Ehrfurcht völlig die Fassung verlieren",
+          "dz" : "热情洋溢或威风凛凛而失态"
+        }
+      },
+      { "10" :
+        { "cy" : "无师天降",
+          "or" : "es ist noch kein Meister vom Himmel gefallen",
+          "an" : [
+            { "zh" : "无", "py" : "wú", "de" : "es gibt keinen, es gibt nicht, kein" },
+            { "zh" : "师", "py" : "shī", "de" : "Meister, Lehrer, Experte" },
+            { "zh" : "天", "py" : "tiān", "de" : "Himmel, Tag" },
+            { "zh" : "降", "py" : "jiàng", "de" : "fallen, herabsteigen" }
+          ],
+          "dd" : "nichts kann ohne Mühe erreicht werden; niemand ist perfekt",
+          "dz" : "事无巨细；人无完人"
+        }
+      },
+      { "11" :
+        { "cy" : "孩童坠井",
+          "or" : "das Kind ist in den Brunnen gefallen",
+          "an" : [
+            { "zh" : "孩童", "py" : "háitóng", "de" : "Kind" },
+            { "zh" : "坠", "py" : "zhuì", "de" : "hineinfallen, fallen" },
+            { "zh" : "击", "py" : "jǐng", "de" : "Brunnen" }
+          ],
+          "dd" : "der Fehler oder das Unglück ist bereits geschehen",
+          "dz" : "舛误或不幸已经发生"
+        }
+      },
+      { "12" :
+        { "cy" : "椒中见兔",
+          "or" : "da liegt der Hase im Pfeffer",
+          "an" : [
+            { "zh" : "椒", "py" : "jiāo", "de" : "Chili, Paprika, Pfeffer" },
+            { "zh" : "中", "py" : "zhōng", "de" : "Mitte, inmitten" },
+            { "zh" : "见", "py" : "jiàn", "de" : "sehen, treffen, erscheinen" },
+            { "zh" : "兔", "py" : "tù", "de" : "Kaninchen, Hase" }
+          ],
+          "dd" : "das ist das entscheidende Problem oder der entscheidende Punkt",
+          "dz" : "这就是关键的问题或要点"
+        }
+      },
+      { "13" :
+        { "cy" : "汤中挑发",
+          "or" : "das Haar in der Suppe finden",
+          "an" : [
+            { "zh" : "汤", "py" : "tāng", "de" : "Suppe, heißes Wasser" },
+            { "zh" : "中", "py" : "zhōng", "de" : "Mitte, inmitten" },
+            { "zh" : "挑", "py" : "tiāo", "de" : "schultern, herausfischen" },
+            { "zh" : "发", "py" : "fà", "de" : "Haar" }
+          ],
+          "dd" : "nur das Schlechte oder Negative sehen",
+          "dz" : "只看到坏或负面的东西"
+        }
+      },
+      { "14" :
+        { "cy" : "播风获飙",
+          "or" : "wer Wind sät, wird Sturm ernten",
+          "an" : [
+            { "zh" : "播", "py" : "bō", "de" : "säen, verstreuen" },
+            { "zh" : "风", "py" : "fēng", "de" : "Wind, Brauch" },
+            { "zh" : "获", "py" : "huò", "de" : "ernten, fangen" },
+            { "zh" : "飙", "py" : "biāo", "de" : "Wirbelwind, Sturm" }
+          ],
+          "dd" : "wer etwas tut, das zum Nachteil oder Schaden anderer ist, muss damit rechnen, heftige Gegenreaktionen zu erhalten",
+          "dz" : "做了损害或伤害他人的事情，就会受到激烈的反击"
+        }
+      },
+      { "15" :
+        { "cy" : "因树忘林",
+          "or" : "den Wald vor lauter Bäumen nicht sehen",
+          "an" : [
+            { "zh" : "因", "py" : "yīn", "de" : "Grund, wegen" },
+            { "zh" : "树", "py" : "shù", "de" : "Baum" },
+            { "zh" : "忘", "py" : "wàng", "de" : "vergessen, übersehen" },
+            { "zh" : "林", "py" : "lín", "de" : "Wald" }
+          ],
+          "dd" : "wegen vieler Optionen die offensichtliche oder nächstliegende Lösung des Problems nicht erkennen",
+          "dz" : "由于有许多选择，没有认识到明显的或最接近的解决问题的方法"
+        }
+      },
+      { "16" :
+        { "cy" : "非鱼非肉",
+          "or" : "nicht Fisch nicht Fleisch",
+          "an" : [
+            { "zh" : "非", "py" : "fēi", "de" : "nicht" },
+            { "zh" : "鱼", "py" : "yú", "de" : "Fisch" },
+            { "zh" : "肉", "py" : "ròu", "de" : "Fleisch" }
+          ],
+          "dd" : "eine unausgegorene Mischung, schlechtes Mittelmaß",
+          "dz" : "半生不熟的混合物，不好的平庸之物"
+        }
+      },
+      { "17" :
+        { "cy" : "掉丝丢线",
+          "or" : "den Faden verlieren",
+          "an" : [
+            { "zh" : "掉", "py" : "diào", "de" : "fallen, verlieren" },
+            { "zh" : "丝", "py" : "sī", "de" : "Seide, Faden" },
+            { "zh" : "丢", "py" : "diū", "de" : "verlieren, fortwerfen" },
+            { "zh" : "线", "py" : "xiàn", "de" : "Faden, Leine, Linie" }
+          ],
+          "dd" : "beim Reden plötzlich nicht mehr weiterwissen, den gedanklichen Zusammenhang verlieren",
+          "dz" : "说着就卡住了，失去了心理暗示"
+        }
+      },
+      { "18" :
+        { "cy" : "行于木道",
+          "or" : "auf dem Holzweg sein",
+          "an" : [
+            { "zh" : "行", "py" : "xíng", "de" : "gehen, reisen, tun" },
+            { "zh" : "于", "py" : "yú", "de" : "in, auf" },
+            { "zh" : "木", "py" : "mù", "de" : "Holz, Baum, hölzern" },
+            { "zh" : "道", "py" : "dào", "de" : "Weg, Pfad" }
+          ],
+          "dd" : "in nicht zielführender Weise vorgehen",
+          "dz" : "误入歧途，走上了错误的道路"
+        }
+      },
+      { "19" :
+        { "cy" : "赶牛离冰",
+          "or" : "die Kuh vom Eis holen",
+          "an" : [
+            { "zh" : "赶", "py" : "gǎn", "de" : "einholen, treiben, sich beeilen" },
+            { "zh" : "牛", "py" : "niú", "de" : "Kuh, Rind" },
+            { "zh" : "离", "py" : "lí", "de" : "verlassen, sich entfernen" },
+            { "zh" : "冰", "py" : "bīng", "de" : "Eis" }
+          ],
+          "dd" : "eine knifflige oder problematische Situation lösen",
+          "dz" : "解决棘手的问题"
+        }
+      },
+      { "20" :
+        { "cy" : "倾浴倒孩",
+          "cy2" : "子水共扔",
+          "or" : "das Kind mit dem Bade ausschütten",
+          "an" : [
+            { "zh" : "倾", "py" : "qīng", "de" : "umstürzen, ausgießen" },
+            { "zh" : "浴", "py" : "yù", "de" : "Bad" },
+            { "zh" : "倒", "py" : "dào", "de" : "umwerfen, herauswerfen" },
+            { "zh" : "孩", "py" : "hái", "de" : "Kind" }
+          ],
+          "dd" : "übereifrig mit dem Schlechten auch das Gute verwerfen",
+          "dz" : "过度热衷于拒绝好的和坏的"
+        }
+      },
+      { "21" :
+        { "cy" : "如拳击眼",
+          "or" : "wie die Faust aufs Auge",
+          "an" : [
+            { "zh" : "如", "py" : "rú", "de" : "wie, als ob" },
+            { "zh" : "拳", "py" : "quán", "de" : "Faust" },
+            { "zh" : "击", "py" : "jī", "de" : "treffen, schlagen" },
+            { "zh" : "眼", "py" : "yǎn", "de" : "Auge" }
+          ],
+          "dd" : "hervorragend zusammenpassen (manchmal auch ironisch gemeint)",
+          "dz" : "配合得非常好（有时也指讽刺）"
+        }
+      },
+      { "22" :
+        { "cy" : "盲鸡遇粮",
+          "or" : "auch ein blindes Huhn findet mal ein Korn",
+          "an" : [
+            { "zh" : "盲", "py" : "máng", "de" : "blind" },
+            { "zh" : "鸡", "py" : "jī", "de" : "Huhn, Geflügel" },
+            { "zh" : "遇", "py" : "yù", "de" : "treffen, begegnen, erhalten" },
+            { "zh" : "粮", "py" : "liáng", "de" : "Getreide, Korn" }
+          ],
+          "dd" : "auch dem Unfähigsten kann zuweilen etwas gelingen",
+          "dz" : "无能之辈也有成功的时候"
+        }
+      },
+      { "23" :
+        { "cy" : "袄裤相同",
+          "or" : "Jacke wie Hose",
+          "an" : [
+            { "zh" : "袄", "py" : "ǎo", "de" : "Jacke" },
+            { "zh" : "kù", "py" : "kù", "de" : "Hose, Unterhose" },
+            { "zh" : "相同", "py" : "xiāngtóng", "de" : "identisch, gleich" }
+          ],
+          "dd" : "ganz egal, einerlei",
+          "dz" : "无所谓，不在乎"
+        }
+      },
+      { "24" :
+        { "cy" : "处女生孩",
+          "or" : "wie die Jungfrau zum Kinde kommen",
+          "an" : [
+            { "zh" : "处女", "py" : "chǔnǚ", "de" : "Jungfrau, Mädchen" },
+            { "zh" : "生", "py" : "shēng", "de" : "geboren werden, gebären, wachsen" },
+            { "zh" : "孩", "py" : "haí", "de" : "Kind" }
+          ],
+          "dd" : "etwas auf wundersame Weise oder ohne eigene Leistung bekommen oder erreichen",
+          "dz" : "奇迹般地或不费吹灰之力地得到或实现东西"
+        }
+      }
+    ]
+    </script>
+
+    <script>
+      (() => {
+        let hideTimeout = false;
+        const showDay = (dayNumber) => {
+          const dayElements = document.querySelectorAll('*[id^="day-"]');
+          for(let i = 0, j = dayElements.length; i < j; i += 1) {
+            dayElements[i].style.opacity = 0;
+            dayElements[i].style.zIndex = 0;
+          }
+          for(let i = 0; i < document.body.classList.length; i += 1) {
+            const bodyClasses = document.body.classList[i];
+            if(bodyClasses.startsWith('color-set-')) {
+              document.body.classList.remove(bodyClasses);
+            }
+          }
+          document.body.classList.add('color-set-'+parseInt(dayNumber % 4 + 1));
+          try {
+            document.querySelector('#day-'+dayNumber).style.opacity = 1;
+            document.querySelector('#day-'+dayNumber).style.zIndex = 10;
+          } catch {
+            return false;
+          }
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => {
+            document.body.classList.remove('show-nav');
+          }, 250);
+        }
+        document.querySelector('body > header').addEventListener('click', (event) => {
+          if(event.target == document.querySelector('body > header')) {
+            event.preventDefault();
+            document.body.classList.toggle('show-nav');
+          }
+        }, false);
+        const parseStyle = (pElement, string) => {
+          matches = string.match(/(.*?<\/?em>)/g);
+          if(matches != null) {
+            for(let i = 0, j = matches.length; i < j; i += 1) {
+              if(matches[i].match(/<em>/) != null) {
+                pElement.appendChild(document.createTextNode(matches[i].replace(/<em>/, '')));
+              } else {
+                const emElement = document.createElement('em');
+                emElement.appendChild(document.createTextNode(matches[i].replace(/<\/em>/, '')));
+                pElement.appendChild(emElement);
+              }
+            }
+          } else {
+            pElement.textContent = string;
+          }
+        }
+        let clickTimeout = false;
+        const today = new Date();
+        const chengyDefs = JSON.parse(document.getElementById('chengyu-defs').textContent);
+        for(let i = 0, j = chengyDefs.length; i < j; i += 1) {
+          const chengyuTemplate = document.importNode(document.querySelector('#template-chengyu').content, true);
+          const itemId = Object.keys(chengyDefs[i])[0];
+          const itemAnalysis = chengyDefs[i][itemId].an;
+          for(let k = 0, l = itemAnalysis.length; k < l; k += 1) {
+            const analysisTemplate = document.importNode(document.querySelector('#template-analysis').content, true);
+            analysisTemplate.querySelector('.characters').textContent = itemAnalysis[k].zh;
+            analysisTemplate.querySelector('.pinyin').textContent = itemAnalysis[k].py;
+            parseStyle(analysisTemplate.querySelector('.translation'), itemAnalysis[k].de);
+            chengyuTemplate.querySelector('.analysis').appendChild(analysisTemplate);
+          }
+          chengyuTemplate.querySelector('article').setAttribute('id', 'day-'+itemId);
+          chengyuTemplate.querySelector('h2').textContent = itemId;
+          chengyuTemplate.querySelector('.chengyu').textContent = chengyDefs[i][itemId].cy;
+          chengyuTemplate.querySelector('.original').textContent = chengyDefs[i][itemId].or;
+          chengyuTemplate.querySelector('.definition-de').textContent = chengyDefs[i][itemId].dd;
+          chengyuTemplate.querySelector('.definition-zh').textContent = chengyDefs[i][itemId].dz;
+          document.querySelector('main').appendChild(chengyuTemplate);
+          const listItemLink = document.createElement('a');
+          listItemLink.setAttribute('href', '#');
+          listItemLink.textContent = itemId;
+          const listItem = document.createElement('li');
+          const listItemAngle = 285 + (15 * i);
+          listItem.setAttribute('data-day', itemId);
+          listItem.style.transform = 'rotate('+listItemAngle+'deg) translate(var(--nav-radius), 0) rotate(-'+listItemAngle+'deg)',
+          listItem.appendChild(listItemLink);
+          listItem.addEventListener('click', (event) => {
+            event.preventDefault();
+            listItem.classList.add('active');
+            showDay(listItem.dataset.day);
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+              listItem.classList.remove('active');
+            }, 750);
+          }, false);
+           if(today.getMonth() == 11 && today.getDate() >= parseInt(itemId, 10)) {
+            document.querySelector('#calendar ul').appendChild(listItem);
+          }
+        }
+        if(today.getMonth() == 11) {
+          showDay(today.getDate());
+        }
+        window.addEventListener('load', () => {
+          document.fonts.ready.then(() => {
+            if(!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
+              const privacyModal = document.getElementById('privacy-modal');
+              privacyModal.showModal();
+              privacyModal.addEventListener('close', () => {
+                if(privacyModal.returnValue == 'ok'){
+                  const fontStyle = document.createElement('style');
+                  fontStyle.textContent = `
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+                    `;
+                  document.head.appendChild(fontStyle);
+                }
+              });
+            }
+          });
+        });
+      })();
+    </script>
+
+  </body>
+</html>
