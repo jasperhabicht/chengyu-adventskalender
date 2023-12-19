@@ -779,16 +779,20 @@
         if(today.getMonth() == 11) {
           showDay(today.getDate());
         }
-        let selectDay = '';
+        let selectDay = '0';
         window.addEventListener('keydown', (event) => {
           if(event.key == 'Escape') {
-            selectDay = '';
+            selectDay = '0';
           }
-          if(event.key == 'Enter' && parseInt(selectDay, 10) > 0 && parseInt(selectDay, 10) < 25) {
-            showDay(parseInt(selectDay, 10));
-            selectDay = '';
+          if(event.key == 'Enter' && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
+            if(parseInt(selectDay, 10)) {
+              showDay(today.getDate());
+            } else {
+              showDay(parseInt(selectDay, 10));
+            }
+            selectDay = '0';
           }
-          if(/^[0-9]$/.test(event.key) && (selectDay == '' || (parseInt(selectDay, 10) > 0 && parseInt(selectDay, 10) < 25))) {
+          if(/^[0-9]$/.test(event.key) && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
             selectDay += event.key;
           }
         });
