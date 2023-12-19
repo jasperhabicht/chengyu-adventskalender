@@ -268,6 +268,14 @@
       opacity: 1;
     }
 
+    .prevent-spoiler header:hover + main {
+      transform: scale(1.5) translateY(50px);
+    }
+
+    .prevent-spoiler header:hover + main .display .spoiler {
+      opacity: 0;
+    }
+
     /* === */
 
     footer {
@@ -687,6 +695,10 @@
 
     <script>
       (() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('prevent-spoiler')) {
+          document.body.classList.add('prevent-spoiler');
+        };
         let hideTimeout = false;
         const showDay = (dayNumber) => {
           const dayElements = document.querySelectorAll('*[id^="day-"]');
