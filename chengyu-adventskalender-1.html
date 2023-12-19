@@ -807,6 +807,9 @@
           if(/^[0-9]$/.test(event.key) && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
             selectDay += event.key;
           }
+          if(event.key == 's') {
+            document.body.classList.toggle('prevent-spoiler');
+          }
         });
         window.addEventListener('load', () => {
           document.fonts.ready.then(() => {
