@@ -781,6 +781,19 @@
         if(today.getMonth() == 11) {
           showDay(today.getDate());
         }
+        let selectDay = '';
+        window.addEventListener('keydown', (event) => {
+          if(event.key == 'Escape') {
+            selectDay = '';
+          }
+          if(event.key == 'Enter' && parseInt(selectDay, 10) > 0 && parseInt(selectDay, 10) < 25) {
+            showDay(parseInt(selectDay, 10));
+            selectDay = '';
+          }
+          if(/^[0-9]$/.test(event.key) && (selectDay == '' || (parseInt(selectDay, 10) > 0 && parseInt(selectDay, 10) < 25))) {
+            selectDay += event.key;
+          }
+        });
         window.addEventListener('load', () => {
           document.fonts.ready.then(() => {
             if(!document.fonts.check('12px "Noto Serif"') || !document.fonts.check('12px "Noto Serif SC"')){
