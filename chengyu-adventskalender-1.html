@@ -785,7 +785,7 @@
             selectDay = '0';
           }
           if(event.key == 'Enter' && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
-            if(parseInt(selectDay, 10)) {
+            if(parseInt(selectDay, 10) == 0) {
               showDay(today.getDate());
             } else {
               showDay(parseInt(selectDay, 10));
