@@ -712,7 +712,8 @@
               document.body.classList.remove(bodyClasses);
             }
           }
-          document.body.classList.add('color-set-'+parseInt(dayNumber % 4 + 1));
+          document.body.classList.add('color-set-'+parseInt(dayNumber % 4 + 1, 10));
+          document.body.setAttribute('data-current-day', parseInt(dayNumber, 10));
           try {
             document.querySelector('#day-'+dayNumber).style.opacity = 1;
             document.querySelector('#day-'+dayNumber).style.zIndex = 10;
@@ -784,7 +785,7 @@
               listItem.classList.remove('active');
             }, 750);
           }, false);
-           if(today.getMonth() == 11 && today.getDate() >= parseInt(itemId, 10)) {
+          if(today.getMonth() == 11 && today.getDate() >= parseInt(itemId, 10)) {
             document.querySelector('#calendar ul').appendChild(listItem);
           }
         }
@@ -809,6 +810,11 @@
           }
           if(event.key == 's') {
             document.body.classList.toggle('prevent-spoiler');
+          }
+          if(event.key == 'c') {
+            const currentDay = document.body.getAttribute('data-current-day');
+            const currentChengyu = chengyDefs[currentDay - 1][Object.keys(chengyDefs[currentDay - 1])[0]];
+            navigator.clipboard.writeText(currentChengyu.cy);
           }
         });
         window.addEventListener('load', () => {

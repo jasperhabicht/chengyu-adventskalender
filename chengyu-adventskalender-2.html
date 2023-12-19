@@ -812,6 +812,11 @@
           if(event.key == 's') {
             document.body.classList.toggle('prevent-spoiler');
           }
+          if(event.key == 'c') {
+            const currentDay = document.body.getAttribute('data-current-day');
+            const currentChengyu = chengyDefs[currentDay - 1][Object.keys(chengyDefs[currentDay - 1])[0]];
+            navigator.clipboard.writeText(currentChengyu.cy);
+          }
         });
         window.addEventListener('load', () => {
           document.fonts.ready.then(() => {
