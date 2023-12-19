@@ -798,12 +798,12 @@
           if(event.key == 'Escape') {
             selectDay = '0';
           }
-          if(event.key == 'Enter' && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
+          if(event.key == 'Enter') {
             if(parseInt(selectDay, 10) == 0) {
               showDay(today.getDate());
-            } else {
+            } else if(parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
               showDay(parseInt(selectDay, 10));
-            }
+            } 
             selectDay = '0';
           }
           if(/^[0-9]$/.test(event.key) && parseInt(selectDay, 10) > -1 && parseInt(selectDay, 10) < 25) {
