@@ -31,5 +31,5 @@ Es besteht mit den folgenden Tastenkombiationen die Möglichkeit, direkt zu eine
 
 可以使用以下组合键直接切换到某个日期并开启无剧透模式：
 
-* <kbd>0</kbd>&ndash;<kbd>9</kbd> <kbd>Enter</kbd>：直接切换到指定日期；<kbd>0</kbd> <kbd>Enter</kbd> 切换到当日。
+* <kbd>0</kbd>&ndash;<kbd>9</kbd> <kbd>Enter</kbd>：直接换到指定日期；<kbd>0</kbd> <kbd>Enter</kbd> 换到当日。
 * <kbd>s</kbd>：切换无剧透模式；无剧透模式不显示德文和中文含义的信息。
