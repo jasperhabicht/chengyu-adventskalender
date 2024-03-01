@@ -22,7 +22,7 @@ Es besteht mit den folgenden Tastenkombiationen die Möglichkeit, direkt zu eine
 
 成语是中国谚语的一种形式，通常只用四个字表达。
 
-本写降临节日历（Adventskalender）每个都包含24条德国谚语，这些谚语已被翻译成中文并转化为中国成语的形式。
+本些降临节日历（Adventskalender）每个都包含24条德国谚语，这些谚语已被翻译成中文并转化为中国成语的形式。
 
 每条 “德文成语” 都附有关汉字和德国谚语的德文和中文含义的信息。
 如此，该日历适合以中国为母语的人学习德语谚语，也适合以德国为母语的人学习中国的汉字。
